@@ -14,13 +14,27 @@ import javax.swing.*;
 public class ChessGame {
 
     static Piece[][] board;
-    static JButton[][] buttons;
+    static JButton[][] buttons; 
     static String currentPlayer;
     static int selectedR = -1, selectedC = -1;
+    static Color light = new Color(240, 217, 181);
+    static Color dark = new Color(181, 136, 99);
+    static Color highlight = new Color(255, 255, 100); // yellow
 
     static JFrame frame;
     static JPanel boardPanel;
+    static String getImagePath(Piece p) {
+    String color = p.color.equals("White") ? "w" : "b";
 
+    if (p instanceof Pawn) return "Chess_" + color + "pawn.png";
+    if (p instanceof Rook) return "Chess_" + color + "rook.png";
+    if (p instanceof Knight) return "Chess_" + color + "knight.png";
+    if (p instanceof Bishop) return "Chess_" + color + "bishop.png";
+    if (p instanceof Queen) return "Chess_" + color + "queen.png";
+    if (p instanceof King) return "Chess_" + color + "king.png";
+
+    return "";
+}
     static abstract class Piece {
         String color;
         boolean moved = false;
@@ -133,6 +147,42 @@ public class ChessGame {
         menu.setVisible(true);
     }
 
+    static boolean hasAnyLegalMove(String color) {
+    for (int fr = 0; fr < 8; fr++) {
+        for (int fc = 0; fc < 8; fc++) {
+            Piece p = board[fr][fc];
+
+            if (p != null && p.color.equals(color)) {
+                for (int tr = 0; tr < 8; tr++) {
+                    for (int tc = 0; tc < 8; tc++) {
+
+                        // can't capture own piece
+                        if (board[tr][tc] != null &&
+                            board[tr][tc].color.equals(color)) continue;
+
+                        if (p.isValidMove(board, fr, fc, tr, tc)) {
+
+                            // simulate move
+                            Piece backup = board[tr][tc];
+                            board[tr][tc] = p;
+                            board[fr][fc] = null;
+
+                            boolean stillInCheck = isInCheck(color);
+
+                            // undo move
+                            board[fr][fc] = p;
+                            board[tr][tc] = backup;
+
+                            if (!stillInCheck) return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
     static void showGameOver(String winner) {
         JFrame over = new JFrame("Game Over");
         over.setSize(300, 200);
@@ -185,11 +235,28 @@ public class ChessGame {
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 JButton btn = new JButton();
+                btn.setFocusable(false);
+
+                // 🔥 THESE TWO LINES FIX YOUR ISSUE
+                btn.setOpaque(true);
+                btn.setBorderPainted(false);
+
+                Color light = new Color(240, 217, 181);
+                Color dark = new Color(181, 136, 99);
+
+                if ((r + c) % 2 == 0)
+                    btn.setBackground(light);
+                else
+                    btn.setBackground(dark);
+
                 btn.setFont(new Font("Arial", Font.BOLD, 20));
-                int rr=r, cc=c;
-                btn.addActionListener(e -> handleClick(rr,cc));
-                buttons[r][c]=btn;
+
+                int rr = r, cc = c;
+                btn.addActionListener(e -> handleClick(rr, cc));
+
+                buttons[r][c] = btn;
                 boardPanel.add(btn);
+                btn.setFocusPainted(false);
             }
         }
 
@@ -199,12 +266,30 @@ public class ChessGame {
     }
 
     static void updateBoard() {
-        for (int r=0;r<8;r++){
-            for (int c=0;c<8;c++){
-                buttons[r][c].setText(board[r][c]==null?"":board[r][c].toString());
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+
+            if ((r + c) % 2 == 0)
+                buttons[r][c].setBackground(light);
+            else
+                buttons[r][c].setBackground(dark);
+            if (r == selectedR && c == selectedC) {
+                buttons[r][c].setBackground(highlight);
+            }
+
+            buttons[r][c].setText("");
+
+            if (board[r][c] == null) {
+                buttons[r][c].setIcon(null);
+            } else {
+                String path = getImagePath(board[r][c]);
+                ImageIcon icon = new ImageIcon(path);
+                Image img = icon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                buttons[r][c].setIcon(new ImageIcon(img));
             }
         }
     }
+}
 
     static boolean isInCheck(String color) {
         int kr=-1,kc=-1;
@@ -229,7 +314,9 @@ public class ChessGame {
         if(selectedR==-1){
             Piece p=board[r][c];
             if(p!=null&&p.color.equals(currentPlayer)){
-                selectedR=r;selectedC=c;
+                selectedR = r;
+                selectedC = c;
+                updateBoard();
             }
             return;
         }
@@ -264,8 +351,11 @@ public class ChessGame {
 
         p.moved=true;
 
-        if(isInCheck(currentPlayer)){
-            showGameOver((currentPlayer.equals("White")?"Black":"White"));
+        String opponent = currentPlayer.equals("White") ? "Black" : "White";
+
+        if (isInCheck(opponent) && !hasAnyLegalMove(opponent)) {
+            updateBoard();
+            showGameOver(currentPlayer); // winner
             return;
         }
 
