@@ -6,12 +6,10 @@
 ## Project Title:
 - Virtual Chess Engine
 ## What Are You Building?:
-- A virtual chess engine, simulates playing chess. One version with a bot and another with
-another user. Fully simulated chess matches, with all characters & rules simulated. But
-with a spicy twist
+- A chess game that features a player vs player game mode.
 ## Why Is This Your Java 2 Project:
 - We wanted to use Java to its fullest potential, and chess seems complex. Coding all the
-rules & visual aspects is difficult, especially coding a Bot to play alongside. It uses
+rules & visual aspects is difficult. It uses
 sorting algorithms & generics, as well as OOP & recursive programming
 ## What is your MVP:
 - A 1v1 chess game, that simulates a real chess match, with all the rules and moves
