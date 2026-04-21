@@ -26,12 +26,12 @@ public class ChessGame {
     static String getImagePath(Piece p) {
     String color = p.color.equals("White") ? "w" : "b";
 
-    if (p instanceof Pawn) return "Chess_" + color + "pawn.png";
-    if (p instanceof Rook) return "Chess_" + color + "rook.png";
-    if (p instanceof Knight) return "Chess_" + color + "knight.png";
-    if (p instanceof Bishop) return "Chess_" + color + "bishop.png";
-    if (p instanceof Queen) return "Chess_" + color + "queen.png";
-    if (p instanceof King) return "Chess_" + color + "king.png";
+    if (p instanceof Pawn) return "chesspiece/Chess_" + color + "pawn.png";
+    if (p instanceof Rook) return "chesspiece/Chess_" + color + "rook.png";
+    if (p instanceof Knight) return "chesspiece/Chess_" + color + "knight.png";
+    if (p instanceof Bishop) return "chesspiece/Chess_" + color + "bishop.png";
+    if (p instanceof Queen) return "chesspiece/Chess_" + color + "queen.png";
+    if (p instanceof King) return "chesspiece/Chess_" + color + "king.png";
 
     return "";
 }

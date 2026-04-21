@@ -20,4 +20,7 @@ coded implicitly
 - Pairs, Khani & Ayah
 ## AI Use Plan
 - Only used when needed, to debug or run into problems within the code. A majority of the
-code will be hand-written and all code written by AI will have a signifie
+code will be hand-written and all code written by AI will have a signified 
+## How to run
+- First, have a working computer with JDK installed, anything after 23 would work
+- 
